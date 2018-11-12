@@ -10,10 +10,11 @@ class App extends React.Component {
 	constructor() {
 		super();
 		this.state = {
-			fishes: {},
-			orders: {}
+			fishes : {},
+			order  : {}
 		};
 	}
+
 	addFish = (fish) => {
 		let fishes = { ...this.state.fishes };
 		const time = Date.now();
@@ -21,13 +22,25 @@ class App extends React.Component {
 		this.setState({ fishes });
 	};
 
+	addOrder = (key) => {
+		let order = { ...this.state.order };
+		order[key] = order[key] + 1 || 1;
+		this.setState({ order });
+	};
+
+	removeOrder = (key) => {
+		let order = { ...this.state.order };
+		delete order[key];
+		this.setState({ order });
+	};
+
 	loadSamples = () => {
 		this.setState({ fishes: sampleFishes });
 	};
 	componentWillMount() {
 		this.ref = base.syncState(`${this.props.params.storeId}/fishes`, {
-			context: this,
-			state: 'fishes'
+			context : this,
+			state   : 'fishes'
 		});
 	}
 	render() {
@@ -36,14 +49,15 @@ class App extends React.Component {
 				<div className="menu">
 					<Header />
 					<ul className="list-of-fishes">
-						{Object.keys(this.state.fishes).map((id) => <Fish key={id} item={this.state.fishes[id]} />)}
+						{Object.keys(this.state.fishes).map((id) => (
+							<Fish key={id} i={id} item={this.state.fishes[id]} addOrder={this.addOrder} />
+						))}
 					</ul>
 				</div>
-				<Order />
+				<Order fishes={this.state.fishes} order={this.state.order} removeOrder={this.removeOrder} />
 				<Inventory addFish={this.addFish} loadSamples={this.loadSamples} />
 			</div>
 		);
 	}
 }
-
 export default App;
